@@ -4,7 +4,7 @@ import webbrowser
 import threading
 import time
 from helper import parse_toc_xml
-
+import xml.etree.ElementTree as ET
 
 
 def open_browser():
@@ -17,10 +17,13 @@ def visualizer(toc_file, content_file):
 
     @app.route('/')
     def index():
-        toc = parse_toc_xml(toc_file)
+        tree = ET.parse('tesla.xml')
+        root = tree.getroot()
+        document = root.find('document')
+        toc_tree = parse_toc_xml(document)
         with open(content_file, 'r') as f:
             content = f.read()
-        return render_template('index.html', toc=toc, content=content)
+        return render_template('index.html', toc=toc_tree, content=content)
 
     # Start the browser in a new thread
     threading.Thread(target=open_browser).start()
@@ -28,7 +31,3 @@ def visualizer(toc_file, content_file):
     # Run the Flask app
     app.run(debug=True, use_reloader=False)
 
-if __name__ == '__main__':
-    visualizer('tesla.xml', 'tesla.html')
-
-# The HTML template remains the same as in the previous version

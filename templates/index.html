@@ -20,7 +20,7 @@
         }
 
         #toc {
-            width: 250px;
+            width: 350px;
             height: 100%;
             overflow-y: auto;
             padding: 20px;
@@ -49,11 +49,15 @@
 
         #toc ul {
             list-style-type: none;
+            padding-left: 20px;
+        }
+
+        #toc>ul {
             padding-left: 0;
         }
 
         #toc li {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         #toc a {
@@ -71,10 +75,22 @@
     <div class="container">
         <div id="toc">
             <h2>Table of Contents</h2>
+            {% macro render_toc(node) %}
+            <li>
+                <a href="#{{ node.parsing_id }}">{{ node.name }}</a>
+                {% if node.content %}: {{ node.content }}{% endif %}
+                {% if node.children %}
+                <ul>
+                    {% for child in node.children %}
+                    {{ render_toc(child) }}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            {% endmacro %}
+
             <ul>
-                {% for item in toc %}
-                <li><a href="#{{ item.parsing_id }}">{{ item.title }}</a></li>
-                {% endfor %}
+                {{ render_toc(toc) }}
             </ul>
         </div>
         <div id="content-wrapper">
