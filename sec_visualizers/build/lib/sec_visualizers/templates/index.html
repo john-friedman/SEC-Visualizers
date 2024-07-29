@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Tool</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        #toc {
+            width: 350px;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+            box-sizing: border-box;
+        }
+
+        #content-wrapper {
+            flex-grow: 1;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        #content {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #toc h2 {
+            margin-top: 0;
+        }
+
+        #toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        #toc>ul {
+            padding-left: 0;
+        }
+
+        #toc li {
+            margin-bottom: 5px;
+        }
+
+        #toc a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        #toc a:hover {
+            color: #0066cc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="toc">
+            <h2>Table of Contents</h2>
+            {% macro render_toc(node) %}
+            <li>
+                <a href="#{{ node.parsing_id }}">{{ node.name }}</a>
+                {% if node.content %}: {{ node.content }}{% endif %}
+                {% if node.children %}
+                <ul>
+                    {% for child in node.children %}
+                    {{ render_toc(child) }}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            {% endmacro %}
+
+            <ul>
+                {{ render_toc(toc) }}
+            </ul>
+        </div>
+        <div id="content-wrapper">
+            <div id="content">
+                {{ content|safe }}
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('#toc a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href').slice(1);
+                const targetElement = document.querySelector(`[parsing_id="${targetId}"]`);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
